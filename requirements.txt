@@ -1,0 +1,2 @@
+requests>=2.32.3
+currency_convert>=0.2
