@@ -1,2 +1,37 @@
-# buff163_price_getter
-Python library which provides buff163 and steam prices based from market hash name 
+# Buff163 Price Getter 
+
+A Python module for retrieving CS2 item prices from Buff163 marketplace.
+
+## Features
+
+- Async support for efficient API calls
+- Currency conversion
+- Steam price comparison 
+- Uses official CS2 marketplace IDs
+
+## Installation
+
+```bash
+pip install git+https://github.com/L0G1H/buff163_price_getter.git
+``` 
+## Usage
+
+```python
+import asyncio 
+import os
+from buff163_price_getter import Buff163_Price_Getter
+
+async def main():
+    # Initialize with your Buff163 cookie and desired currency 
+    getter = Buff163_Price_Getter(cookie=os.getenv("BUFF163_COOKIE"), currency="EUR")
+    
+    # Get item prices
+    result = await getter.get_item("AK-47 | Redline (Minimal Wear)") 
+    print(result) # {"buff_price": 123.45, "steam_price": 150.67} 
+
+if __name__ == "__main__": 
+    asyncio.run(main())
+``` 
+## License
+
+This project is licensed under the GNU General Public License v3.0.
