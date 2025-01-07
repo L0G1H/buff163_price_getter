@@ -6,68 +6,66 @@ import os
 import requests
 
 
-class Buff163_Price_Getter:
-    def __init__(self, cookie: str, currency: str):
-        self.url = "https://buff.163.com/api/market/goods/sell_order"
+OK_STATUS = 200
 
+
+class Buff163PriceGetter:
+    def __init__(self, cookie: str, currency: str) -> None:
+        self.url = "https://buff.163.com/api/market/goods/sell_order"
         self.params = {
             "game": "csgo",
             "page_num": 1,
             "sort_by": "default",
             "allow_tradable_cooldown": 1,
         }
-
-        self.headers = {
-            "Cookie": cookie
-        }
-
+        self.headers = {"Cookie": cookie}
         self.currency_rate = currency_convert.get_exchange_rate("CNY", currency)
-
-        cs2_marketplace_ids_url = ("https://raw.githubusercontent.com/ModestSerhat/"
-                                   "cs2-marketplace-ids/refs/heads/main/cs2_marketplaceids.json")
-
+        cs2_marketplace_ids_url = (
+            "https://raw.githubusercontent.com/ModestSerhat/"
+            "cs2-marketplace-ids/refs/heads/main/cs2_marketplaceids.json"
+        )
         response = requests.get(cs2_marketplace_ids_url)
         response.raise_for_status()
-
         data = response.json()
-
         self.buff_id_lookup = {}
-
         for item_name, item_info in data.get("items", {}).items():
             self.buff_id_lookup[item_name] = item_info.get("buff163_goods_id")
 
-    async def get_item(self, item_name) -> dict:
+    async def get_item(self, item_name: str) -> dict:
         item_id = self.buff_id_lookup.get(item_name)
-
-        if item_id is None:
-            raise Exception("Item ID not found")
+        assert item_id
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(
+            try:
+                async with session.get(
                     self.url,
                     params={"goods_id": item_id, **self.params},
-                    headers=self.headers
-            ) as response:
-                if response.status != 200:
-                    raise aiohttp.ClientResponseError(
-                        response.request_info,
-                        response.history,
-                        status=response.status
-                    )
+                    headers=self.headers,
+                    timeout=aiohttp.ClientTimeout(total=30),
+                ) as response:
+                    if response.status != OK_STATUS:
+                        raise aiohttp.ClientResponseError(
+                            response.request_info,
+                            response.history,
+                            status=response.status,
+                        )
+                    response_data = await response.json()
+            except aiohttp.ClientError as e:
+                print(f"Error fetching item {item_name}: {e}")
+                return None
 
-                response_data = await response.json()
+        item_data = response_data["data"]["goods_infos"][str(item_id)]
+        buff_price = round(
+            float(item_data.get("sell_min_price")) * self.currency_rate, 2
+        )
+        steam_price = round(
+            float(item_data.get("steam_price_cny")) * self.currency_rate, 2
+        )
+        return {"buff_price": buff_price, "steam_price": steam_price}
 
-                item_data = response_data["data"]["goods_infos"][str(item_id)]
 
-                buff_price = round(float(item_data.get("sell_min_price")) * self.currency_rate, 2)
-                steam_price = round(float(item_data.get("steam_price_cny")) * self.currency_rate, 2)
-
-                return {"buff_price": buff_price, "steam_price": steam_price}
-
-
-async def main():
-    getter = Buff163_Price_Getter(os.getenv("BUFF163_COOKIE"), "EUR")
-
+async def main() -> None:
+    getter = Buff163PriceGetter(os.getenv("BUFF163_COOKIE"), "EUR")
     start = time.time()
 
     results = await asyncio.gather(
@@ -80,10 +78,12 @@ async def main():
     end = time.time()
 
     for result in results:
-        print(result)
+        if result:
+            print(result)
 
-    print(end - start)
+    print(f"Total time: {end - start}")
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+

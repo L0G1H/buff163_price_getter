@@ -1,4 +1,0 @@
-currency_convert~=0.3
-setuptools~=75.5.0
-aiohttp~=3.11.7
-requests~=2.32.3

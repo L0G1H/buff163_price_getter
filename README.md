@@ -19,11 +19,11 @@ pip install git+https://github.com/L0G1H/buff163_price_getter.git
 ```python
 import asyncio 
 import os
-from buff163_price_getter import Buff163_Price_Getter
+from buff163_price_getter import Buff163PriceGetter
 
 async def main():
     # Initialize with your Buff163 cookie and desired currency 
-    getter = Buff163_Price_Getter(cookie=os.getenv("BUFF163_COOKIE"), currency="EUR")
+    getter = Buff163PriceGetter(cookie=os.getenv("BUFF163_COOKIE"), currency="EUR")
     
     # Get item prices
     result = await getter.get_item("AK-47 | Redline (Minimal Wear)") 
