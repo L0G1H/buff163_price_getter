@@ -6,8 +6,7 @@ A Python module for retrieving CS2 item prices from Buff163 marketplace.
 
 - Async support for efficient API calls
 - Currency conversion
-- Steam price comparison 
-- Uses official CS2 marketplace IDs
+- Steam prices addition 
 
 ## Installation
 
@@ -23,11 +22,12 @@ from buff163_price_getter import Buff163PriceGetter
 
 async def main():
     # Initialize with your Buff163 cookie and desired currency 
-    getter = Buff163PriceGetter(cookie=os.getenv("BUFF163_COOKIE"), currency="EUR")
+    getter = Buff163PriceGetter(cookie=cookie, currency="EUR")
     
     # Get item prices
     result = await getter.get_item("AK-47 | Redline (Minimal Wear)") 
     print(result) # {"buff_price": 123.45, "steam_price": 150.67} 
+
 
 if __name__ == "__main__": 
     asyncio.run(main())

@@ -1,14 +1,11 @@
 [project]
 name = "buff163-price-getter"
-version = "0.4.0"
+version = "0.5.0"
 description = "A Python module for retrieving CS2 item prices from Buff163 marketplace"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 dependencies = [
-    "aiohttp>=3.11.11",
-    "currency-convert",
+    "aiohttp>=3.10.11",
+    "bs4>=0.0.2",
     "requests>=2.32.3",
 ]
-
-[tool.uv.sources]
-currency-convert = { git = "https://github.com/L0G1H/currency_convert.git" }
