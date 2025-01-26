@@ -1,6 +1,6 @@
 [project]
 name = "buff163-price-getter"
-version = "0.6.1"
+version = "0.6.2"
 description = "A Python module for retrieving CS2 item prices from Buff163 marketplace"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -11,4 +11,4 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["buff163_price_getter", "currency_convert"]
+packages = ["buff163_price_getter"]
