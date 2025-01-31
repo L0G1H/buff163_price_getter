@@ -1,7 +1,4 @@
-import time
 import aiohttp
-import asyncio
-import os
 import requests
 from . import currency_convert
 
@@ -10,7 +7,7 @@ OK_STATUS = 200
 
 
 class Buff163PriceGetter:
-    def __init__(self, cookie: str, currency: str) -> None:
+    def __init__(self, currency: str) -> None:
         self.url = "https://buff.163.com/api/market/goods/sell_order"
         self.params = {
             "game": "csgo",
@@ -19,7 +16,6 @@ class Buff163PriceGetter:
             "allow_tradable_cooldown": 1,
         }
 
-        self.headers = {"Cookie": cookie}
         self.currency_rate = currency_convert.get_rate("CNY", currency)
         cs2_marketplace_ids_url = (
             "https://raw.githubusercontent.com/ModestSerhat/"
@@ -43,7 +39,6 @@ class Buff163PriceGetter:
                 async with session.get(
                     self.url,
                     params={"goods_id": item_id, **self.params},
-                    headers=self.headers,
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
                     if response.status != OK_STATUS:
@@ -68,27 +63,3 @@ class Buff163PriceGetter:
         )
 
         return {"buff_price": buff_price, "steam_price": steam_price}
-
-
-async def main() -> None:
-    getter = Buff163PriceGetter(os.getenv("BUFF163_COOKIE"), "EUR")
-    start = time.time()
-
-    results = await asyncio.gather(
-        getter.get_item("AK-47 | Redline (Minimal Wear)"),
-        getter.get_item("AK-47 | Redline (Field-Tested)"),
-        getter.get_item("AK-47 | Redline (Minimal Wear)"),
-        getter.get_item("AK-47 | Redline (Field-Tested)"),
-    )
-
-    end = time.time()
-
-    for result in results:
-        if result:
-            print(result)
-
-    print(f"Total time: {end - start}")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
