@@ -3,7 +3,7 @@ import aiohttp
 import asyncio
 import os
 import requests
-import currency_convert
+from . import currency_convert
 
 
 OK_STATUS = 200
