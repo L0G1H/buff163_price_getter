@@ -77,12 +77,8 @@ async def main() -> None:
     results = await asyncio.gather(
         getter.get_item("AK-47 | Redline (Minimal Wear)"),
         getter.get_item("AK-47 | Redline (Field-Tested)"),
-        getter.get_item("AK-47 | Redline (Well-Worn)"),
-        getter.get_item("AK-47 | Redline (Battle-Scarred)"),
         getter.get_item("AK-47 | Redline (Minimal Wear)"),
         getter.get_item("AK-47 | Redline (Field-Tested)"),
-        getter.get_item("AK-47 | Redline (Well-Worn)"),
-        getter.get_item("AK-47 | Redline (Battle-Scarred)"),
     )
 
     end = time.time()
